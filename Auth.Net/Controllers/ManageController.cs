@@ -74,12 +74,13 @@ namespace Auth.Net.Controllers
         public async Task<ActionResult> RemoveLogin(string userId)
         {
             ManageMessageId? message;
-            //refresh security token to end user session
+            //refresh security token to end user session and invalidate his auth cookie
             var result = await UserManager.UpdateSecurityStampAsync(userId);
             if (result.Succeeded)
             {
                 var user= await UserManager.FindByIdAsync(userId);
                 message = ManageMessageId.UserLoggedOff;
+
                 //update connected clients
                 AuthorisationHub.Refresh(user.UserName);
             }

@@ -18,6 +18,7 @@ namespace Auth.Net.Hubs
             return _clientConnections.Where(c => c.Value == userName).Count();
         }
 
+
         public static void Refresh(string userName)
         {
             var conections = _clientConnections.Where(c => c.Value == userName).Select(c => c.Key).Distinct().ToList();
@@ -25,6 +26,7 @@ namespace Auth.Net.Hubs
             foreach (var con in conections)
             {
                 hub.Clients.Client(con).refresh();
+                
             }
         }
 
