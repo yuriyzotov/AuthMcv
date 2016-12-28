@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Security.Cryptography;
 using System.Web;
 
@@ -10,12 +11,44 @@ namespace Auth.Net.Helpers
     public static class CryptoHelper
     {
 
+        public static string ToHex(this byte[] data)
+        {
+            return BitConverter.ToString(data).Replace("-", string.Empty);
+        }
+
 
         public static byte[] GetRandomKey(int length)
         {
             var keyGenerator = new Rfc2898DeriveBytes(Guid.NewGuid().ToString(), Guid.NewGuid().ToByteArray(), 300);
 
             return  keyGenerator.GetBytes(length);
+
+        }
+
+        static byte[] B(string s)
+        {
+            var b = BigInteger.Parse(s);
+            var ret = b.ToByteArray();
+            if (ret[ret.Length - 1] == 0)
+            {
+                Array.Resize(ref ret, ret.Length - 1);
+            }
+            Array.Reverse(ret);
+            return ret;
+        }
+        public static byte[] EncryptRSA(byte[] pubKey, byte[] data)
+        {
+            using (var rsa = new RSACryptoServiceProvider())
+            {
+                var keyInfo = rsa.ExportParameters(false);
+                //Set rsa to the public key values. 
+                keyInfo.Modulus = pubKey;
+                //cryptico js is using 03 as exponent
+                keyInfo.Exponent =  B("03");
+                //Import key parameters into RSA.
+                rsa.ImportParameters(keyInfo);
+                return rsa.Encrypt(data,false);
+            }
 
         }
 

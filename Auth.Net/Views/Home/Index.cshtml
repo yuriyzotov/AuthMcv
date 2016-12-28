@@ -52,11 +52,27 @@
         $('#status').hide();
         $('#progress').modal('show');
         var text1 = $('#inputText1').val();
+        // The passphrase used to repeatably generate this RSA key.
+        var salt = CryptoJS.lib.WordArray.random(128 / 8);
+        var passPhrase = salt.toString(CryptoJS.enc.Base64); // randomize
+        // The length of the RSA key, in bits.
+        var bits = 2048;
+        var RSAkey = cryptico.generateRSAKey(passPhrase, bits);
+        var publicKeyString = cryptico.publicKeyString(RSAkey);
 
-        var encryptedData = authAes.getKey()
+        var encryptedData = authAes.getKey(publicKeyString)
             //encrypt text
             //set  text2
-            .done(function (data) { $('#inputText2').val(authAes.encrypt(data, text1).toString()); })
+            //CryptoJS.enc.Base64.parse
+            .done(function (data) {
+                //RSA decrypt
+                var decryptionResult = {
+                    key: RSAkey.decrypt(cryptico.b64to16(data.key)),
+                    iv: RSAkey.decrypt(cryptico.b64to16(data.iv))
+                };
+                var encrypted = authAes.encrypt(decryptionResult, text1);
+                $('#inputText2').val(encrypted.toString());
+            })
             //send to server
             .then(function () { return authAes.getDecrypted($('#inputText2').val()) })
             //set decrypted to text3

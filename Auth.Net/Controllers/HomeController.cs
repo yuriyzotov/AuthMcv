@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -46,21 +47,34 @@ namespace Auth.Net.Controllers
             await Task.Delay(5000);
             string value = CryptoHelper.DecryptAES256(
                 Convert.FromBase64String(data),
-                Convert.FromBase64String(Session["key"] as string),
-                Convert.FromBase64String(Session["iv"] as string)
+                Session["key"] as byte[],
+                Session["iv"] as byte[]
                 );
             return Json(new { value });
         }
 
-        public JsonResult GetAES256()
+        [HttpPost]
+        public JsonResult GetAES256(string data)
         {
+            var publicKeyBytes = Convert.FromBase64String(data);
+
             var keyBytes = CryptoHelper.GetRandomKey(48);
-            //48 bytes means -256 bits for key and 128 bits for iv value 
+            //48 bytes means: 256 bits for key and 128 bits for iv value 
+            Session["key"] = keyBytes.Take(32).ToArray();
+            Session["iv"] = keyBytes.Skip(32).Take(16).ToArray();
 
-            Session["key"] = Convert.ToBase64String(keyBytes.Take(32).ToArray(), Base64FormattingOptions.None) ;
-            Session["iv"] = Convert.ToBase64String(keyBytes.Skip(32).Take(16).ToArray(), Base64FormattingOptions.None);
+            //convert values to string by hex, due js encryptor work with strings
+            var keyStr = (Session["key"] as byte[]).ToHex();
+            var ivStr = (Session["iv"] as byte[]).ToHex();
 
-            return Json(new { key=Session["key"], iv= Session["iv"] } , JsonRequestBehavior.AllowGet);
+            //encrypt them with RSA
+            var keyEnc = CryptoHelper.EncryptRSA(publicKeyBytes, Encoding.ASCII.GetBytes(keyStr));
+            var ivEnc = CryptoHelper.EncryptRSA(publicKeyBytes, Encoding.ASCII.GetBytes(ivStr));
+
+            return Json(new {
+                key = Convert.ToBase64String(keyEnc, Base64FormattingOptions.None),
+                iv = Convert.ToBase64String(ivEnc, Base64FormattingOptions.None)
+                } , JsonRequestBehavior.AllowGet);
         }
 
         public  ActionResult Index()

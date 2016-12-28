@@ -18,8 +18,11 @@ namespace Auth.Net
                         "~/Scripts/jquery.signalR-2.1.2.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/app").IncludeDirectory("~/Scripts/app", "*.js"));
-            bundles.Add(new ScriptBundle("~/bundles/app/encrypt").IncludeDirectory("~/Scripts/app/encyption", "*.js")
+            bundles.Add(new ScriptBundle("~/bundles/app/encrypt")
                 .Include("~/Scripts/CryptoJS/rollups/aes.js")
+                .Include("~/Scripts/Cryptico/cryptico.browser.js")
+                .Include("~/Scripts/app/encyption/textEncrypt1.js")
+
                 //.Include("~/Scripts/CryptoJS/components/aes-min.js")
                 //.Include("~/Scripts/CryptoJS/components/enc-base64-min.js")
 

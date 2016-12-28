@@ -88,6 +88,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -237,13 +238,14 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\app\authSignalRClient.js" />
-    <Content Include="Scripts\app\encyption\textEncrypt.js" />
+    <Content Include="Scripts\app\encyption\textEncrypt1.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\Cryptico\cryptico.browser.js" />
     <Content Include="Scripts\CryptoJS\components\aes-min.js" />
     <Content Include="Scripts\CryptoJS\components\core-min.js" />
     <Content Include="Scripts\CryptoJS\components\enc-base64-min.js" />
